@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>更新資料</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>更新資料</h2>
+    <form id="updateForm">
+        <input type="hidden" id="userId" name="userId" th:value="${user.id}">
+        <div class="form-group">
+            <label for="username">使用者名稱:</label>
+            <input type="text" class="form-control" id="username" required th:value="${user.username}">
+        </div>
+        <div class="form-group">
+            <label for="email">新信箱:</label>
+            <input type="email" class="form-control" id="email" required th:value="${user.email}">
+        </div>
+        <button type="submit" class="btn btn-primary">更新</button>
+    </form>
+</div>
+
+<script src="/js/jquery.min.js"></script><script>
+    $(document).ready(function() {
+        $('#updateForm').submit(function(event) {
+            event.preventDefault();
+            const userId = $('#userId').val(); // 从隐藏字段获取 userId
+            const userData = {
+                username: $('#username').val(),
+                email: $('#email').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/user/update/' + userId, // 确保这里的 URL 与您的 @PostMapping 注解路径相匹配
+                contentType: 'application/json',
+                data: JSON.stringify(userData),
+                success: function(response) {
+                    alert('資料更新成功');
+                    // 这里可以跳转到任何页面，或者执行其他的 JavaScript 操作
+                    // 例如，如果想留在当前页面，可以不做任何事情或刷新页面
+                    // window.location.reload(); // 刷新当前页面
+                    // 或者，如果你有其他页面想跳转，比如首页
+                    // window.location.href = '/';
+                },
+                error: function(xhr) {
+                    alert('更新失敗: ' + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

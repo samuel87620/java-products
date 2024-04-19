@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>用戶列表</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>用戶列表</h2>
+    <table class="table">
+        <thead>
+        <tr>
+            <th>使用者名稱</th>
+            <th>信箱</th>
+        </tr>
+        </thead>
+        <tbody id="userList">
+        <!-- 用户数据将由 JavaScript 动态加载 -->
+        </tbody>
+    </table>
+</div>
+
+<script src="/js/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $.ajax({
+            type: 'GET',
+            url: '/user/users', // 将 URL 改为与后端映射匹配
+            success: function(data) {
+                // 假设返回的数据是一个用户对象数组
+                data.forEach(function(user) {
+                    $('#userList').append(
+                        `<tr><td>${user.username}</td><td>${user.email}</td></tr>`
+                    );
+                });
+            },
+            error: function(xhr) {
+                alert('無法加載用戶列表: ' + xhr.responseText);
+            }
+        });
+    });
+</script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

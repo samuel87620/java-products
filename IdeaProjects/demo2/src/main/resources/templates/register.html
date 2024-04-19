@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>註冊</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-4">
+    <h2>註冊</h2>
+    <form id="registrationForm">
+        <div class="form-group">
+            <label for="username">使用者名稱:</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">密碼:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="email">信箱:</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary">註冊</button>
+    </form>
+</div>
+
+<script src="/js/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#registrationForm').submit(function(event) {
+            event.preventDefault();
+            const userData = {
+                username: $('#username').val(),
+                password: $('#password').val(),
+                email: $('#email').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/users/register',  // 確保這是你的後端接口 URL
+                contentType: 'application/json',
+                data: JSON.stringify(userData),
+                success: function() {
+                    alert('註冊成功');
+                    // 可以在這裡處理成功後的邏輯，比如頁面跳轉等
+                },
+                error: function(xhr) {
+                    alert('註冊失敗: ' + xhr.responseText);
+                    // 處理錯誤情況
+                }
+            });
+        });
+    });
+</script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
