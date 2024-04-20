@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>商品管理</title>
+    <script src="/js/jquery.min.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<h1>商品列表</h1>
+<div id="products"></div>
+
+<h2>新增商品</h2>
+<form id="createProductForm">
+    <label for="name">名稱:</label>
+    <input type="text" id="name"><br>
+    <label for="price">價格:</label>
+    <input type="number" id="price"><br>
+    <label for="stock">庫存:</label>
+    <input type="number" id="stock"><br>
+    <button type="submit">新增商品</button>
+</form>
+
+<h2>更新商品</h2>
+<form id="updateProductForm">
+    <label for="updateId">商品ID:</label>
+    <input type="number" id="updateId"><br>
+    <label for="updateName">名稱:</label>
+    <input type="text" id="updateName"><br>
+    <label for="updatePrice">價格:</label>
+    <input type="number" id="updatePrice"><br>
+    <label for="updateStock">庫存:</label>
+    <input type="number" id="updateStock"><br>
+    <button type="submit">更新商品</button>
+</form>
+
+<h2>刪除商品</h2>
+<form id="deleteProductForm">
+    <label for="deleteId">商品ID:</label>
+    <input type="number" id="deleteId"><br>
+    <button type="submit">刪除商品</button>
+</form>
+
+<<script>
+    $(document).ready(function() {
+        function fetchProducts() {
+            $.ajax({
+                type: 'GET',
+                url: '/api/products',
+                success: function(products) {
+                    // 确保使用 `product` 而不是 `products` 来访问对象的属性
+                    let productsHtml = products.map(product => `
+                        <p>商品ID: ${product.id}, 名稱: ${product.name}, 價格: ${product.price}, 庫存: ${product.stock}</p>
+                    `).join(''); // 加上 join('') 将数组转换为字符串
+                    $('#products').html(productsHtml);
+                },
+                error: function() {
+                    alert('商品列表加載失敗');
+                }
+            });
+        }
+
+        fetchProducts();
+
+        $('#createProductForm').submit(function(event) {
+            event.preventDefault();
+            const productData = {
+                name: $('#name').val(),
+                price: $('#price').val(),
+                stock: $('#stock').val()
+            };
+
+            $.ajax({
+                type: 'POST',
+                url: '/api/products',
+                contentType: 'application/json',
+                data: JSON.stringify(productData),
+                success: function() {
+                    alert('商品新增成功');
+                    fetchProducts(); // 重新加載商品列表
+                },
+                error: function(xhr) {
+                    alert('新增失敗: ' + xhr.responseText);
+                }
+            });
+        });
+
+        $('#updateProductForm').submit(function(event) {
+            event.preventDefault();
+            const productId = $('#updateId').val();
+            const productData = {
+                name: $('#updateName').val(),
+                price: $('#updatePrice').val(),
+                stock: $('#updateStock').val()
+            };
+
+            $.ajax({
+                type: 'PUT',
+                url: '/api/products/' + productId,
+                contentType: 'application/json',
+                data: JSON.stringify(productData),
+                success: function() {
+                    alert('商品更新成功');
+                    fetchProducts(); // 重新加載商品列表
+                },
+                error: function(xhr) {
+                    alert('更新失敗: ' + xhr.responseText);
+                }
+            });
+        });
+
+        $('#deleteProductForm').submit(function(event) {
+            event.preventDefault();
+            const productId = $('#deleteId').val();
+
+            $.ajax({
+                type: 'DELETE',
+                url: '/api/products/' + productId,
+                success: function() {
+                    alert('商品刪除成功');
+                    fetchProducts(); // 重新加載商品列表
+                },
+                error: function(xhr) {
+                    alert('刪除失敗: ' + xhr.responseText);
+                }
+            });
+        });
+    });
+</script>
+<script src="/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
