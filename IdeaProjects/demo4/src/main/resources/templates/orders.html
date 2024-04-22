@@ -30,10 +30,15 @@
 <form id="updateForm">
     <label for="orderIdToUpdate">訂單ID:</label>
     <input type="text" id="orderIdToUpdate" placeholder="訂單ID">
+    <label for="updateProductId">商品ID:</label>
+    <input type="text" id="updateProductId" placeholder="商品ID">
+    <label for="updateQuantity">數量:</label>
+    <input type="number" id="updateQuantity" placeholder="數量">
     <label for="newStatus">新狀態:</label>
     <input type="text" id="newStatus" placeholder="新狀態">
     <button type="submit">更新訂單</button>
 </form>
+
 
 <!-- 表單用於刪除訂單 -->
 <form id="deleteForm">
@@ -90,10 +95,16 @@
         $('#updateForm').submit(function(event) {
             event.preventDefault();
             const orderId = $('#orderIdToUpdate').val();
+            const productId = $('#updateProductId').val();
+            const quantity = $('#updateQuantity').val();
             const statusValue = $('#newStatus').val();
+
             const data = {
+                productId: productId,
+                quantity: quantity,
                 status: statusValue
             };
+
             $.ajax({
                 type: 'PUT',
                 url: '/api/orders/' + orderId,
@@ -111,12 +122,13 @@
             });
         });
 
+
         $('#deleteForm').submit(function(event) {
             event.preventDefault();
             const orderId = $('#orderIdToDelete').val();
             $.ajax({
                 type: 'DELETE',
-                url: '/api/orders/' + orderId, // 添加斜杠 '/'
+                url: '/api/orders/' + orderId, 
                 success: function() {
                     alert('訂單刪除成功');
                     loadOrders();

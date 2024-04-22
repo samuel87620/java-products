@@ -9,6 +9,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
+import org.springframework.ui.Model;
 import java.util.List;
 
 @Controller
@@ -35,7 +36,7 @@ public class OrderViewController {
     @GetMapping("/{id}")
     public ModelAndView getOrderViewById(@PathVariable Long id) {
         OrderDto order = orderService.getOrderById(id);
-        ModelAndView modelAndView = new ModelAndView("ordersByStatus");
+        ModelAndView modelAndView = new ModelAndView("orders");
         modelAndView.addObject("order", order);
         return modelAndView;
     }
@@ -64,15 +65,17 @@ public class OrderViewController {
     }
 
     // 更新订单
-    @PutMapping("/{id}")
-    public ResponseEntity<OrderDto> updateOrder(@PathVariable Long id, @RequestBody OrderDto orderDto) {
-        OrderDto updatedOrder = orderService.updateOrder(id, orderDto);
-        if (updatedOrder != null) {
-            return ResponseEntity.ok(updatedOrder);
+    @GetMapping("/update/{id}")
+    public String showUpdateForm(@PathVariable Long id, Model model) {
+        OrderDto orderDto = orderService.getOrderById(id);
+        if (orderDto != null) {
+            model.addAttribute("order", orderDto);
+            return "orders"; // 設定對應的視圖名稱
         } else {
-            return ResponseEntity.notFound().build();
+            return "redirect:/order/orders"; // 如果訂單不存在，重定向回訂單列表
         }
     }
+
 
 
     // 删除订单

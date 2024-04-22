@@ -32,25 +32,26 @@ public class OrderServiceImpl implements OrderService {
         this.restTemplate = restTemplate;
         this.productServiceUrl = productServiceUrl;
     }
-
     @Override
     @Transactional
     public OrderDto updateOrder(Long id, OrderDto orderDto) {
         log.debug("Attempting to update order with ID: {}", id);
         Order order = orderRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Order with ID: {} not found", id);
-                    return new RuntimeException("Order not found");
-                });
-        // Check to prevent overwriting the ID if it's inadvertently supplied in the DTO
+                .orElseThrow(() -> new RuntimeException("Order not found with ID: " + id));
         if (orderDto.getId() != null && !order.getId().equals(orderDto.getId())) {
-            log.error("Attempt to update order with ID: {} failed due to ID mismatch", id);
-            throw new RuntimeException("ID in DTO does not match entity ID");
+            throw new IllegalArgumentException("ID in DTO does not match entity ID");
         }
+        if (orderDto.getProductId() == null) {
+            throw new IllegalArgumentException("Product ID must not be null");
+        }
+        // 確保productId對應於數據庫中的一個有效產品ID
+        // (這裡可能需要添加額外的邏輯來驗證產品ID的有效性)
 
+        BeanUtils.copyProperties(orderDto, order, "id", "orderDate");
+        order = orderRepository.saveAndFlush(order);
+        log.debug("Order with ID: {} updated in database", order.getId());
         return convertToDto(order);
     }
-
 
 
     @Override
